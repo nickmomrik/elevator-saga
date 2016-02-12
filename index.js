@@ -60,7 +60,7 @@
       });
 
       elevator.on("floor_button_pressed", function(floorNum) {
-
+        elevator.goToFloor(floorNum);
       });
     });
   },
