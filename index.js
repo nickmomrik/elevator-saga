@@ -32,10 +32,14 @@
 
     floors.forEach(function(floor) {
       floor.on("up_button_pressed", function() {
+        //console.log('up', floor.floorNum());
+
 
       });
 
       floor.on("down_button_pressed", function() {
+        //console.log('', floor.floorNum());
+
 
       });
     });
@@ -52,14 +56,20 @@
       });
 
       elevator.on('stopped_at_floor', function(floorNum) {
+        //console.log('stopped', floorNum);
+
         resetIndicators(elevator);
       });
 
       elevator.on("passing_floor", function(floorNum, direction) {
+        //console.log('passing', floorNum, direction);
+
 
       });
 
       elevator.on("floor_button_pressed", function(floorNum) {
+        //console.log('pressed', floorNum);
+
         elevator.goToFloor(floorNum);
       });
     });
