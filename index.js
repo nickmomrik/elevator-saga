@@ -64,7 +64,13 @@
       elevator.on("passing_floor", function(floorNum, direction) {
         //console.log('passing', floorNum, direction);
 
+        var i = elevator.getPressedFloors().findIndex(function(element, index, array) {
+            return floorNum == element;
+          });
 
+        if (-1 != i) {
+          elevator.goToFloor(floorNum, true);
+        }
       });
 
       elevator.on("floor_button_pressed", function(floorNum) {
