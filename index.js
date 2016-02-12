@@ -30,6 +30,17 @@
       }
     }
 
+    function resetDestinationQueue(elevator) {
+      var newQueue = elevator.destinationQueue.reverse().filter(function (e, i, arr) {
+        return arr.indexOf(e, i+1) === -1;
+      }).reverse();
+
+      if (newQueue.length != elevator.destinationQueue) {
+        elevator.destinationQueue = newQueue;
+        elevator.checkDestinationQueue();
+      }
+    }
+
     floors.forEach(function(floor) {
       floor.on("up_button_pressed", function() {
         //console.log('up', floor.floorNum());
@@ -59,6 +70,7 @@
         //console.log('stopped', floorNum);
 
         resetIndicators(elevator);
+        resetDestinationQueue(elevator);
       });
 
       elevator.on("passing_floor", function(floorNum, direction) {
