@@ -1,15 +1,36 @@
 {
   init: function(elevators, floors) {
-    var elevator = elevators[0]; // Let's use the first elevator
+    floors.forEach(function(floor) {
+      floor.on("up_button_pressed", function() {
 
-    // Whenever the elevator is idle (has no more queued destinations) ...
-    elevator.on("idle", function() {
-      // let's go to all the floors (or did we forget one?)
-      elevator.goToFloor(0);
-      elevator.goToFloor(1);
+      });
+
+      floor.on("down_button_pressed", function() {
+
+      });
+    });
+
+    elevators.forEach(function(elevator){
+      elevator.on("idle", function() {
+
+      });
+
+      elevator.on('stopped_at_floor', function(floorNum) {
+
+      });
+
+      elevator.on("passing_floor", function(floorNum, direction) {
+
+      });
+
+      elevator.on("floor_button_pressed", function(floorNum) {
+
+      });
     });
   },
+
   update: function(dt, elevators, floors) {
     // We normally don't need to do anything here
+
   }
 }
