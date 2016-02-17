@@ -1,6 +1,7 @@
 {
   init: function(elevators, floors) {
-    var floorCount = floors.length;
+    var floorCount = floors.length,
+        waitingQueue = [];
 
     function elevatorCanGoUp( elevator, floorNum = null ) {
       if (!floorNum) {
@@ -19,11 +20,19 @@
     }
 
     function resetIndicators(elevator) {
+      // Nowhere to go, so can go anywhere
+      if (0 == elevator.destinationQueue.length && 0 == elevator.getPressedFloors().length) {
+        elevator.goingUpIndicator(true);
+        elevator.goingDownIndicator(true);
+      }
+
+      // Can't go up from the top
       if (elevator.goingUpIndicator() && !elevatorCanGoUp(elevator)) {
         elevator.goingUpIndicator(false);
         elevator.goingDownIndicator(true);
       }
 
+      // Can't go down from the bottom
       if (elevator.goingDownIndicator() && !elevatorCanGoDown(elevator)) {
         elevator.goingUpIndicator(true);
         elevator.goingDownIndicator(false);
@@ -41,23 +50,40 @@
       }
     }
 
+    function resetWaitingQueue( floorNum ) {
+      var i = waitingQueue.indexOf( floorNum );
+      if ( -1 != i ) {
+        waitingQueue.splice( i, 1 );
+      }
+    }
+
     floors.forEach(function(floor) {
       floor.on("up_button_pressed", function() {
         //console.log('up', floor.floorNum());
 
-
+        if ( -1 == waitingQueue.indexOf( floor.floorNum() ) ) {
+          waitingQueue.push( floor.floorNum() );
+        }
       });
 
       floor.on("down_button_pressed", function() {
         //console.log('', floor.floorNum());
 
-
+        if ( -1 == waitingQueue.indexOf( floor.floorNum() ) ) {
+          waitingQueue.push( floor.floorNum() );
+        }
       });
     });
 
     elevators.forEach(function(elevator){
       elevator.on("idle", function() {
+        //console.log('idle');
+
         resetIndicators(elevator);
+
+        if ( 0 == elevator.destinationQueue.length && 0 == elevator.loadFactor() && waitingQueue.length ) {
+          elevator.goToFloor( waitingQueue.shift() );
+        }
 
         if (elevator.goingUpIndicator()) {
           elevator.goToFloor(elevator.currentFloor() + 1);
@@ -71,17 +97,18 @@
 
         resetIndicators(elevator);
         resetDestinationQueue(elevator);
+        resetWaitingQueue( floorNum );
       });
 
       elevator.on("passing_floor", function(floorNum, direction) {
         //console.log('passing', floorNum, direction);
 
-        var i = elevator.getPressedFloors().findIndex(function(element, index, array) {
-            return floorNum == element;
-          });
-
-        if (-1 != i) {
+        if (-1 != elevator.getPressedFloors().indexOf(floorNum)) {
           elevator.goToFloor(floorNum, true);
+        } else {
+          if (elevator.loadFactor() < 1 && floors[floorNum].buttonStates[direction]) {
+            elevator.goToFloor(floorNum, true);
+          }
         }
       });
 
@@ -95,6 +122,5 @@
 
   update: function(dt, elevators, floors) {
     // We normally don't need to do anything here
-
   }
 }
