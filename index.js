@@ -58,21 +58,27 @@
 			}
 		}
 
+		function addToWaitingQueue( floorNum ) {
+			if ( -1 == waitingQueue.indexOf( floorNum ) ) {
+				waitingQueue.push( floorNum );
+			}
+		}
+
+		function oppositeDirection( direction ) {
+			return ( 'up' == direction ) ? 'down' : 'up';
+		}
+
 		floors.forEach( function( floor ) {
 			floor.on( "up_button_pressed", function() {
 				//console.log('up', floor.floorNum());
 
-				if ( -1 == waitingQueue.indexOf( floor.floorNum() ) ) {
-					waitingQueue.push( floor.floorNum() );
-				}
+				addToWaitingQueue( floor.floorNum() );
 			} );
 
 			floor.on( "down_button_pressed", function() {
 				//console.log('', floor.floorNum());
 
-				if ( -1 == waitingQueue.indexOf( floor.floorNum() ) ) {
-					waitingQueue.push( floor.floorNum() );
-				}
+				addToWaitingQueue( floor.floorNum() );
 			} );
 		} );
 
@@ -109,6 +115,11 @@
 				} else {
 					if ( elevator.loadFactor() < 1 && floors[floorNum].buttonStates[direction] ) {
 						elevator.goToFloor( floorNum, true );
+
+						// Remove from waiting queue unless someone is waiting to go in the opposite direction
+						if ( !floors[floorNum].buttonStates[ oppositeDirection( direction ) ] ) {
+							resetWaitingQueue( floorNum );
+						}
 					}
 				}
 			} );
