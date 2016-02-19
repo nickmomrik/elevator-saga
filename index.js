@@ -19,19 +19,38 @@
 			return 0 < floorNum;
 		}
 
+		function setIndicators( elevator, direction = 'both' ) {
+			if ( 'up' == direction ) {
+				elevator.goingUpIndicator( true );
+				elevator.goingDownIndicator( false );
+			} else if ( 'down' == direction ) {
+				elevator.goingUpIndicator( false );
+				elevator.goingDownIndicator( true );
+			} else {
+				elevator.goingUpIndicator( true );
+				elevator.goingDownIndicator( true );
+			}
+		}
+
 		function resetIndicators( elevator ) {
 			if ( !elevatorCanGoUp( elevator ) ) {
 				// Can't go up from the top
-				elevator.goingUpIndicator( false );
-				elevator.goingDownIndicator( true );
+				setIndicators( elevator, 'down' );
 			} else if ( !elevatorCanGoDown( elevator ) ) {
 				// Can't go down from the bottom
-				elevator.goingUpIndicator( true );
-				elevator.goingDownIndicator( false );
+				setIndicators( elevator, 'up' );
 			} else if ( 0 == elevator.destinationQueue.length && 0 == elevator.getPressedFloors().length ) {
 				// Nowhere to go, so can go anywhere
-				elevator.goingUpIndicator( true );
-				elevator.goingDownIndicator( true );
+				setIndicators( elevator );
+			} else {
+				var nextFloor = elevator.destinationQueue[0];
+				if ( nextFloor > elevator.currentFloor() ) {
+					setIndicators( elevator, 'up' );
+				} else if ( nextFloor < elevator.currentFloor() ) {
+					setIndicators( elevator, 'down' );
+				} else {
+					setIndicators( elevator );
+				}
 			}
 		}
 
