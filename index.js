@@ -80,7 +80,7 @@
 
 		elevators.forEach( function( elevator ){
 			elevator.on( "idle", function() {
-				// console.log( 'idle', elevator.destinationQueue, waitingQueue, elevator.loadFactor(), elevator.goingUpIndicator(), elevator.goingDownIndicator() );
+				//console.log( 'idle', elevator.destinationQueue, waitingQueue, elevator.loadFactor(), elevator.goingUpIndicator(), elevator.goingDownIndicator() );
 
 				resetIndicators( elevator );
 
@@ -92,6 +92,8 @@
 				if ( 0 == elevator.destinationQueue.length && waitingQueue.length ) {
 					//console.log( 'idle - going to waitingQueue floor' );
 					elevator.goToFloor( waitingQueue.shift() );
+
+					return;
 				}
 
 				if ( elevator.goingUpIndicator() ) {
