@@ -85,21 +85,21 @@
 
 		floors.forEach( function( floor ) {
 			floor.on( "up_button_pressed", function() {
-				//console.log( 'up', floor.floorNum() );
+				//console.log( 'f' + floor.floorNum() + ' pressed up' );
 
 				addToWaitingQueue( floor.floorNum() );
 			} );
 
 			floor.on( "down_button_pressed", function() {
-				//console.log( 'down', floor.floorNum() );
+				//console.log( 'f' + floor.floorNum() + ' pressed down' );
 
 				addToWaitingQueue( floor.floorNum() );
 			} );
 		} );
 
-		elevators.forEach( function( elevator ){
+		elevators.forEach( function( elevator, elevatorNum ){
 			elevator.on( "idle", function() {
-				//console.log( 'idle', elevator.destinationQueue, waitingQueue, elevator.loadFactor(), elevator.goingUpIndicator(), elevator.goingDownIndicator() );
+				//console.log( 'e' + elevatorNum + ' idle with dest:' + elevator.destinationQueue.toString() + ' waiting: ' + waitingQueue.toString() + ' load: ' + elevator.loadFactor() + ' indicators: up - ' + elevator.goingUpIndicator() + ' down - ' + elevator.goingDownIndicator() );
 
 				resetIndicators( elevator );
 
@@ -108,24 +108,28 @@
 					return;
 				}
 
+				var nextFloor;
+
 				if ( 0 == elevator.destinationQueue.length && waitingQueue.length ) {
-					//console.log( 'idle - going to waitingQueue floor' );
-					elevator.goToFloor( waitingQueue.shift() );
+					nextFloor = waitingQueue.shift();
+					//console.log( 'e' + elevatorNum + ' idle: going to waitingQueue f' + nextFloor );
+					elevator.goToFloor( nextFloor );
 
 					return;
 				}
 
+				nextFloor = elevator.currentFloor();
 				if ( elevator.goingUpIndicator() ) {
-					//console.log( 'idle - going to next up floor' );
-					elevator.goToFloor( elevator.currentFloor() + 1 );
-				} else if ( elevator.goingDownIndicator() ) {
-					//console.log( 'idle - going to next down floor' );
-					elevator.goToFloor( elevator.currentFloor() - 1 );
+					nextFloor++;
+				} else {
+					nextFloor--;
 				}
+				//console.log( 'e' + elevatorNum + ' idle: going to next f' + nextFloor );
+				elevator.goToFloor( nextFloor );
 			} );
 
 			elevator.on( 'stopped_at_floor', function( floorNum ) {
-				//console.log( 'stopped', floorNum );
+				//console.log( 'e' + elevatorNum + ' stopped at f' + floorNum );
 
 				resetIndicators( elevator );
 				resetDestinationQueue( elevator );
@@ -133,14 +137,14 @@
 			} );
 
 			elevator.on( "passing_floor", function( floorNum, direction ) {
-				//console.log( 'passing', floorNum, direction );
+				//console.log( 'e' + elevatorNum + ' passing f' + floorNum + ' ' + direction );
 
 				if ( -1 != elevator.getPressedFloors().indexOf( floorNum ) && 0 < elevator.loadFactor() ) {
-					//console.log( 'passing - going to pressed floor', floorNum );
+					//console.log( 'e' + elevatorNum + ' passing: going to pressed f' + floorNum );
 					elevator.goToFloor( floorNum, true );
 				} else {
 					if ( elevator.loadFactor() < 1 && floors[floorNum].buttonStates[direction] ) {
-						//console.log( 'passing - going to waiting floor', floorNum, direction );
+						//console.log( 'e' + elevatorNum + ' passing: going to waiting f' + floorNum + ' ' + direction );
 						elevator.goToFloor( floorNum, true );
 
 						// Remove from waiting queue unless someone is waiting to go in the opposite direction
@@ -152,7 +156,7 @@
 			} );
 
 			elevator.on( "floor_button_pressed", function( floorNum ) {
-				//console.log( 'pressed', floorNum );
+				//console.log( 'e' + elevatorNum + ' pressed f' + floorNum );
 
 				elevator.goToFloor( floorNum );
 			} );
