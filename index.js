@@ -88,7 +88,12 @@
 
 				resetIndicators( elevator );
 
-				if ( 0 == elevator.destinationQueue.length && 0 == elevator.loadFactor() && waitingQueue.length ) {
+				if ( elevator.loadFactor() > 0 ) {
+					// Wait for someone to press a floor button
+					return;
+				}
+
+				if ( 0 == elevator.destinationQueue.length && waitingQueue.length ) {
 					elevator.goToFloor( waitingQueue.shift() );
 				}
 
