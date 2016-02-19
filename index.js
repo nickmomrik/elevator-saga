@@ -135,7 +135,7 @@
 			elevator.on( "passing_floor", function( floorNum, direction ) {
 				//console.log( 'passing', floorNum, direction );
 
-				if ( -1 != elevator.getPressedFloors().indexOf( floorNum ) ) {
+				if ( -1 != elevator.getPressedFloors().indexOf( floorNum ) && 0 < elevator.loadFactor() ) {
 					//console.log( 'passing - going to pressed floor', floorNum );
 					elevator.goToFloor( floorNum, true );
 				} else {
