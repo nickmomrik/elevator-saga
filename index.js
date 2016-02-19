@@ -40,6 +40,7 @@
     }
 
     function resetDestinationQueue(elevator) {
+      // Remove duplicates, keeping first instance of floor
       var newQueue = elevator.destinationQueue.reverse().filter(function (e, i, arr) {
         return arr.indexOf(e, i+1) === -1;
       }).reverse();
