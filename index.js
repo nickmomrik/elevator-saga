@@ -20,22 +20,18 @@
 		}
 
 		function resetIndicators( elevator ) {
-			// Nowhere to go, so can go anywhere
-			if ( 0 == elevator.destinationQueue.length && 0 == elevator.getPressedFloors().length ) {
-				elevator.goingUpIndicator( true );
-				elevator.goingDownIndicator( true );
-			}
-
-			// Can't go up from the top
-			if ( elevator.goingUpIndicator() && !elevatorCanGoUp( elevator ) ) {
+			if ( !elevatorCanGoUp( elevator ) ) {
+				// Can't go up from the top
 				elevator.goingUpIndicator( false );
 				elevator.goingDownIndicator( true );
-			}
-
-			// Can't go down from the bottom
-			if ( elevator.goingDownIndicator() && !elevatorCanGoDown( elevator ) ) {
+			} else if ( !elevatorCanGoDown( elevator ) ) {
+				// Can't go down from the bottom
 				elevator.goingUpIndicator( true );
 				elevator.goingDownIndicator( false );
+			} else if ( 0 == elevator.destinationQueue.length && 0 == elevator.getPressedFloors().length ) {
+				// Nowhere to go, so can go anywhere
+				elevator.goingUpIndicator( true );
+				elevator.goingDownIndicator( true );
 			}
 		}
 
