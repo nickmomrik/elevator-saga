@@ -151,6 +151,11 @@
 					elevator.goToFloor( floorNum, true );
 				} else {
 					if ( elevator.loadFactor() < 1 && floors[floorNum].buttonStates[direction] ) {
+						// If going down and nobody pressed 0, but 0 is waiting, don't stop
+						if ( elevator.goingDownIndicator() && -1 == elevator.getPressedFloors().indexOf( 0 ) && floors[0].buttonStates['up'] ) {
+							return;
+						}
+
 						debug( 'e' + elevatorNum + ' passing: going to waiting f' + floorNum + ' ' + direction );
 						elevator.goToFloor( floorNum, true );
 
